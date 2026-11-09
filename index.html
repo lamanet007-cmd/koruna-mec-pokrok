@@ -6,13 +6,15 @@
     <title>Koruna, Meč a Pokrok (900–1950)</title>
     <style>
         :root {
-            --bg-dark: #0a0907;
-            --panel-bg: #181410;
-            --border-gold: #c5a059;
+            --bg-dark: #070605;
+            --panel-bg: rgba(18, 14, 10, 0.95);
+            --border-gold: #d4af37;
+            --border-glow: #ffcc00;
             --border-dark: #3a2e1e;
-            --text-gold: #e6c687;
-            --text-light: #f3ece1;
-            --accent-red: #8b1e1e;
+            --text-gold: #f3cf7a;
+            --text-light: #ece3d4;
+            --accent-red: #991b1b;
+            --accent-green: #15803d;
         }
 
         * {
@@ -28,7 +30,7 @@
             height: 100%;
             background-color: var(--bg-dark);
             color: var(--text-light);
-            font-family: 'Georgia', serif;
+            font-family: 'Times New Roman', Times, serif;
             overflow: hidden;
         }
 
@@ -42,49 +44,51 @@
 
         /* Top Bar */
         #top-bar {
-            background: linear-gradient(180deg, #2b2216 0%, #110e0a 100%);
+            background: linear-gradient(180deg, #1f1810 0%, #0a0805 100%);
             border-bottom: 2px solid var(--border-gold);
-            padding: 8px 12px;
+            padding: 6px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 30;
-            flex-wrap: wrap;
-            gap: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
         }
 
         .resource-group {
             display: flex;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 4px 10px;
-            border-radius: 6px;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 12px;
+            border-radius: 4px;
             border: 1px solid var(--border-dark);
-            font-size: 0.85rem;
-            overflow-x: auto;
+            font-size: 0.9rem;
         }
 
         .res-item {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
             color: var(--text-gold);
             font-weight: bold;
-            white-space: nowrap;
+            text-shadow: 1px 1px 2px #000;
         }
 
         .btn-gold {
-            background: linear-gradient(180deg, #5c441b 0%, #32230c 100%);
+            background: linear-gradient(180deg, #6e4e1b 0%, #3a270b 100%);
             border: 1px solid var(--border-gold);
             color: var(--text-gold);
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.85rem;
+            font-family: 'Georgia', serif;
+            text-shadow: 1px 1px 2px #000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            transition: all 0.2s;
         }
 
-        .btn-gold:active { background: #231808; }
+        .btn-gold:hover { border-color: #fff; box-shadow: 0 0 8px var(--border-glow); }
+        .btn-gold:active { background: #201404; }
 
         /* Main Workspace */
         #main-layout {
@@ -94,11 +98,11 @@
             overflow: hidden;
         }
 
-        /* Canvas Live Map */
+        /* Real Canvas Map */
         #map-container {
             flex: 2;
             position: relative;
-            background: #192215;
+            background: #0d120a;
             height: 100%;
             width: 100%;
         }
@@ -112,51 +116,80 @@
         /* Side Panels */
         .tab-content {
             flex: 1;
+            min-width: 340px;
+            max-width: 420px;
             background: var(--panel-bg);
             display: flex;
             flex-direction: column;
             padding: 15px;
             gap: 12px;
             overflow-y: auto;
-            border-left: 2px solid var(--border-dark);
+            border-left: 2px solid var(--border-gold);
+            box-shadow: -5px 0 20px rgba(0,0,0,0.8);
         }
 
         .panel-box {
-            background: #110e0a;
+            background: rgba(10, 8, 6, 0.9);
             border: 1px solid var(--border-dark);
-            border-radius: 6px;
+            border-radius: 4px;
             padding: 12px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
         }
 
         .panel-box h3 {
-            margin: 0 0 8px 0;
+            margin: 0 0 10px 0;
             color: var(--text-gold);
-            font-size: 0.95rem;
+            font-size: 1rem;
             border-bottom: 1px solid var(--border-dark);
             padding-bottom: 4px;
+            letter-spacing: 1px;
         }
 
-        /* Dynamic Tech Tree Node */
-        .tech-node {
-            background: #221c13;
+        /* Interactive Construction Item */
+        .build-card {
+            background: #19140e;
             border: 1px solid var(--border-dark);
-            padding: 8px 10px;
-            margin-bottom: 8px;
             border-radius: 4px;
-            font-size: 0.8rem;
-            transition: all 0.3s;
+            padding: 10px;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
         }
 
-        .tech-node.active {
-            border-color: var(--border-gold);
-            background: #1d2b17;
-            color: #bdf0a6;
+        .build-card:hover { border-color: var(--border-gold); }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: #000;
+            border-radius: 4px;
+            margin-top: 6px;
+            overflow: hidden;
+            border: 1px solid #444;
         }
 
-        /* Bottom Nav Bar (Mobile Tabs) */
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #ffcc00);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* Faction Diplomacy Cards */
+        .faction-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: #15110c;
+            border: 1px solid var(--border-dark);
+            margin-bottom: 6px;
+            border-radius: 4px;
+        }
+
+        /* Mobile Nav */
         #mobile-nav {
             display: none;
-            background: #0f0d0a;
+            background: #0a0805;
             border-top: 2px solid var(--border-gold);
             padding: 6px;
             justify-content: space-around;
@@ -164,26 +197,23 @@
         }
 
         .nav-tab {
-            background: #221a11;
+            background: #1a140d;
             border: 1px solid var(--border-dark);
             color: var(--text-gold);
-            padding: 8px 12px;
+            padding: 8px 10px;
             border-radius: 4px;
             font-size: 0.8rem;
             font-weight: bold;
             flex: 1;
-            margin: 0 4px;
+            margin: 0 3px;
             text-align: center;
         }
 
-        .nav-tab.active {
-            background: var(--border-gold);
-            color: #000;
-        }
+        .nav-tab.active { background: var(--border-gold); color: #000; }
 
         /* Footer Event Log */
         #bottom-bar {
-            background: #110e0a;
+            background: #0a0805;
             border-top: 1px solid var(--border-dark);
             padding: 8px 15px;
             display: flex;
@@ -192,16 +222,11 @@
             z-index: 30;
         }
 
-        .event-log {
-            font-size: 0.8rem;
-            color: #d1c7b7;
-            font-style: italic;
-        }
+        .event-log { font-size: 0.85rem; color: #d1c7b7; font-style: italic; }
 
-        /* Mobile Layout rules */
-        @media (max-width: 768px) {
+        @media (max-width: 800px) {
             #mobile-nav { display: flex; }
-            .tab-content { display: none; }
+            .tab-content { display: none; min-width: 100%; }
             .tab-content.active-tab { display: flex; }
             #map-container { display: none; }
             #map-container.active-tab { display: block; }
@@ -214,52 +239,91 @@
     <!-- Top Resource Bar -->
     <header id="top-bar">
         <div class="resource-group">
-            <div class="res-item">🪙 <span id="gold">350</span></div>
-            <div class="res-item">🪵 <span id="materials">180</span></div>
-            <div class="res-item">🌾 <span id="food">420</span></div>
-            <div class="res-item">👥 <span id="pop">120</span></div>
-            <div class="res-item">⚔️ <span id="army">45</span></div>
+            <div class="res-item" title="Zlato">🪙 <span id="gold">500</span> (<span id="gold-rate" style="color:#4ade80;">+25</span>)</div>
+            <div class="res-item" title="Materiál">🪵 <span id="materials">250</span></div>
+            <div class="res-item" title="Potraviny">🌾 <span id="food">600</span></div>
+            <div class="res-item" title="Vojenská Síla">⚔️ <span id="army">50</span></div>
+            <div class="res-item" title="Inflace">📈 <span id="inflation">1.0x</span></div>
         </div>
-        <button class="btn-gold" id="fullscreen-btn">⛶ Fullscreen</button>
+        <button class="btn-gold" id="fullscreen-btn">⛶ Celá obrazovka</button>
     </header>
 
     <!-- Main Workspace -->
     <div id="main-layout">
-        <!-- Animated Canvas Map -->
+        <!-- Canvas Map -->
         <div id="map-container" class="active-tab">
             <canvas id="gameMap"></canvas>
         </div>
 
-        <!-- Research Panel -->
-        <div id="tech-panel" class="tab-content">
+        <!-- Management & Economy Panel -->
+        <div id="build-panel" class="tab-content">
             <div class="panel-box">
                 <h3 id="era-title">Raný Středověk (900 n. l.)</h3>
-                <p style="font-size: 0.8rem; margin: 0; color: #b8ac98;" id="era-desc">Budujte základy státu, opevnění a upevněte moc dynastie v srdci Evropy.</p>
+                <p style="font-size: 0.8rem; margin: 0; color: #b8ac98;" id="era-desc">Budujte základy státu a ekonomiky v srdci Evropy.</p>
             </div>
+
             <div class="panel-box">
-                <h3>Dějinné Milníky</h3>
-                <div class="tech-node active" id="tech-935">✓ 935 n. l. – Hradní soustava a křesťanská jednota</div>
-                <div class="tech-node" id="tech-1348">🔒 1348 n. l. – Založení Karlovy univerzity</div>
-                <div class="tech-node" id="tech-1419">🔒 1419 n. l. – Husitské války a vozové hradby</div>
-                <div class="tech-node" id="tech-1848">🔒 1848 n. l. – Průmyslová revoluce a železnice</div>
-                <div class="tech-node" id="tech-1918">🔒 1918 n. l. – Vznik Československa</div>
+                <h3>Dynamická Výstavba Panství</h3>
+                
+                <div class="build-card">
+                    <div style="display:flex; justify-shadow:space-between; font-weight:bold;">
+                        <span>⛏️ Stříbrný Důl / Hutě</span>
+                        <span>Úroveň: <span id="lvl-mine">1</span></span>
+                    </div>
+                    <div style="font-size:0.75rem; color:#aaa; margin:3px 0;">+20 Zlata/tah | Náklady: 80 🪵</div>
+                    <button class="btn-gold" style="width:100%; margin-top:4px;" onclick="startBuilding('mine', 80)">Zahájit stavbu (3s)</button>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-mine"></div></div>
+                </div>
+
+                <div class="build-card">
+                    <div style="display:flex; justify-shadow:space-between; font-weight:bold;">
+                        <span>🌾 Panská Usedlost / JZD</span>
+                        <span>Úroveň: <span id="lvl-farm">1</span></span>
+                    </div>
+                    <div style="font-size:0.75rem; color:#aaa; margin:3px 0;">+30 Potravin/tah | Náklady: 50 🪙</div>
+                    <button class="btn-gold" style="width:100%; margin-top:4px;" onclick="startBuilding('farm', 50)">Zahájit stavbu (2s)</button>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-farm"></div></div>
+                </div>
+
+                <div class="build-card">
+                    <div style="display:flex; justify-shadow:space-between; font-weight:bold;">
+                        <span>⚔️ Zbrojnice & Kasárny</span>
+                        <span>Úroveň: <span id="lvl-barracks">1</span></span>
+                    </div>
+                    <div style="font-size:0.75rem; color:#aaa; margin:3px 0;">+15 Armáda | Náklady: 100 🪙, 40 🪵</div>
+                    <button class="btn-gold" style="width:100%; margin-top:4px;" onclick="startBuilding('barracks', 100)">Verbovat oddíly (4s)</button>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-barracks"></div></div>
+                </div>
             </div>
         </div>
 
-        <!-- Management Panel -->
-        <div id="build-panel" class="tab-content">
+        <!-- Diplomacy Panel -->
+        <div id="diplomacy-panel" class="tab-content">
             <div class="panel-box">
-                <h3>Ekonomický Rozvoj</h3>
-                <button class="btn-gold" style="width: 100%; margin-bottom: 8px;" onclick="buildStructure('mine')">Postavit Důl / Hutě (-40 🪵, +15 🪙/tah)</button>
-                <button class="btn-gold" style="width: 100%; margin-bottom: 8px;" onclick="buildStructure('farm')">Zemědělská usedlost (-30 🪙, +20 🌾/tah)</button>
-                <button class="btn-gold" style="width: 100%;" onclick="buildStructure('army')">Verbovat jednotky (-30 🪙, +10 ⚔️)</button>
-            </div>
-            <div class="panel-box">
-                <h3>Sousedi & Diplomacie</h3>
-                <div id="factions-status" style="font-size: 0.8rem; color: #ccc;">
-                    🏰 Polsko: Mír (Vojenská síla: <span id="ai-poland">40</span>)<br>
-                    🛡️ Bavorsko & Svatá Říše: Mír (Síla: <span id="ai-hre">65</span>)<br>
-                    🏛️ Uhersko: Mír (Síla: <span id="ai-hungary">50</span>)
+                <h3>Evropská Diplomacie & Války</h3>
+                
+                <div class="faction-card">
+                    <div>
+                        <strong>🛡️ Svatá Říše Římská</strong><br>
+                        <span style="font-size:0.75rem; color:#aaa;">Vztah: <span id="rel-hre">Neutrální</span> | Síla: <span id="pow-hre">120</span></span>
+                    </div>
+                    <button class="btn-gold" onclick="interactDiplomacy('hre')">Jednat</button>
+                </div>
+
+                <div class="faction-card">
+                    <div>
+                        <strong>🏰 Polské Království</strong><br>
+                        <span style="font-size:0.75rem; color:#aaa;">Vztah: <span id="rel-poland">Spojenec</span> | Síla: <span id="pow-poland">85</span></span>
+                    </div>
+                    <button class="btn-gold" onclick="interactDiplomacy('poland')">Jednat</button>
+                </div>
+
+                <div class="faction-card">
+                    <div>
+                        <strong>🏛️ Uherské Království</strong><br>
+                        <span style="font-size:0.75rem; color:#aaa;">Vztah: <span id="rel-hungary">Neutrální</span> | Síla: <span id="pow-hungary">95</span></span>
+                    </div>
+                    <button class="btn-gold" onclick="interactDiplomacy('hungary')">Jednat</button>
                 </div>
             </div>
         </div>
@@ -267,31 +331,36 @@
 
     <!-- Mobile Tabs Navigation -->
     <nav id="mobile-nav">
-        <button class="nav-tab active" onclick="switchTab('map-container', this)">🗺️ Mapa</button>
-        <button class="nav-tab" onclick="switchTab('tech-panel', this)">📜 Výzkum</button>
-        <button class="nav-tab" onclick="switchTab('build-panel', this)">🏰 Správa</button>
+        <button class="nav-tab active" onclick="switchTab('map-container', this)">🗺️ Mapa Evropy</button>
+        <button class="nav-tab" onclick="switchTab('build-panel', this)">🏗️ Ekonomika</button>
+        <button class="nav-tab" onclick="switchTab('diplomacy-panel', this)">⚔️ Diplomacie</button>
     </nav>
 
     <!-- Bottom Action Bar -->
     <footer id="bottom-bar">
-        <div class="event-log" id="event-text">Kronika: Roku 900 n. l. započala cesta vašeho rodu.</div>
-        <button class="btn-gold" style="padding: 8px 16px;" onclick="nextTurn()">Další rok ➔</button>
+        <div class="event-log" id="event-text">Kronika: Roku 900 n. l. vládnete Českému knížectví.</div>
+        <button class="btn-gold" style="padding: 8px 18px; font-size:1rem;" onclick="nextTurn()">Další rok ➔</button>
     </footer>
 </div>
 
 <script>
-    // State Game Data
+    // Game Logic State
     let game = {
         year: 900,
-        gold: 350,
-        materials: 180,
-        food: 420,
-        pop: 120,
-        army: 45,
-        ai: { poland: 40, hre: 65, hungary: 50 }
+        gold: 500,
+        materials: 250,
+        food: 600,
+        army: 50,
+        inflation: 1.0,
+        buildings: { mine: 1, farm: 1, barracks: 1 },
+        buildingInProgress: { mine: false, farm: false, barracks: false },
+        factions: {
+            hre: { name: "Svatá Říše Římská", rel: "Neutrální", power: 120 },
+            poland: { name: "Polské Království", rel: "Spojenec", power: 85 },
+            hungary: { name: "Uherské Království", rel: "Neutrální", power: 95 }
+        }
     };
 
-    // Responsive Mobile Tab Switcher
     function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content, #map-container').forEach(el => el.classList.remove('active-tab'));
         document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
@@ -299,10 +368,43 @@
         btn.classList.add('active');
     }
 
-    // Canvas Map Engine Animation
+    // Dynamic Construction Logic
+    function startBuilding(type, cost) {
+        if (game.buildingInProgress[type]) return;
+        if (type === 'mine' && game.materials < cost) { alert('Nedostatek materiálu!'); return; }
+        if (type === 'farm' && game.gold < cost) { alert('Nedostatek zlata!'); return; }
+        if (type === 'barracks' && game.gold < cost) { alert('Nedostatek zlata!'); return; }
+
+        if (type === 'mine') game.materials -= cost;
+        else game.gold -= cost;
+
+        game.buildingInProgress[type] = true;
+        let duration = type === 'farm' ? 2000 : (type === 'mine' ? 3000 : 4000);
+        let startTime = Date.now();
+        let bar = document.getElementById(`prog-${type}`);
+
+        let timer = setInterval(() => {
+            let elapsed = Date.now() - startTime;
+            let progress = Math.min((elapsed / duration) * 100, 100);
+            bar.style.width = progress + '%';
+
+            if (progress >= 100) {
+                clearInterval(timer);
+                game.buildings[type]++;
+                game.buildingInProgress[type] = false;
+                bar.style.width = '0%';
+                if (type === 'barracks') game.army += 15;
+                document.getElementById(`lvl-${type}`).innerText = game.buildings[type];
+                updateUI();
+            }
+        }, 50);
+        updateUI();
+    }
+
+    // High Quality Real Canvas Map Render Engine
     const canvas = document.getElementById('gameMap');
     const ctx = canvas.getContext('2d');
-    let animationFrame = 0;
+    let animFrame = 0;
 
     function resizeCanvas() {
         canvas.width = canvas.parentElement.clientWidth;
@@ -311,162 +413,140 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    // Map Locations
-    const cities = [
-        { name: "Praha", x: 0.4, y: 0.42, type: "player" },
-        { name: "Kutná Hora", x: 0.5, y: 0.48, type: "player" },
-        { name: "Vídeň", x: 0.52, y: 0.72, type: "ai" },
-        { name: "Krakov", x: 0.78, y: 0.28, type: "ai" }
+    // Map Coordinates for European Capitals & Rivers
+    const mapNodes = [
+        { name: "Praha", x: 0.50, y: 0.45, owner: "player" },
+        { name: "Kutná Hora", x: 0.53, y: 0.47, owner: "player" },
+        { name: "Vídeň", x: 0.53, y: 0.57, owner: "hre" },
+        { name: "Berlín", x: 0.48, y: 0.35, owner: "hre" },
+        { name: "Krakov", x: 0.65, y: 0.43, owner: "poland" },
+        { name: "Budín", x: 0.60, y: 0.60, owner: "hungary" },
+        { name: "Paříž", x: 0.22, y: 0.50, owner: "neutral" }
     ];
 
-    // Dynamic Trade Carts on Map
-    const carts = [
-        { progress: 0, speed: 0.003, from: 0, to: 1 },
-        { progress: 0.5, speed: 0.002, from: 0, to: 2 }
-    ];
-
-    function renderMap() {
+    function drawRealEuropeMap() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        animationFrame += 0.05;
+        animFrame += 0.04;
 
-        // Draw Map Terrain (Land & Forest)
-        ctx.fillStyle = "#1e2918";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        let w = canvas.width;
+        let h = canvas.height;
 
-        // Draw Animated River Vltava & Danube
-        ctx.strokeStyle = "#2c598a";
-        ctx.lineWidth = 8;
+        // Sea / Ocean Background
+        ctx.fillStyle = "#0a141d";
+        ctx.fillRect(0, 0, w, h);
+
+        // European Continent Outline Base
+        ctx.fillStyle = "#1a2517";
         ctx.beginPath();
-        let riverY = 0;
-        ctx.moveTo(canvas.width * 0.42, 0);
-        for (let y = 0; y < canvas.height; y += 20) {
-            let wave = Math.sin(y * 0.02 + animationFrame * 0.5) * 5;
-            ctx.lineTo(canvas.width * 0.42 + wave, y);
-        }
+        // Rough European landmass contour
+        ctx.moveTo(w * 0.1, h * 0.9);
+        ctx.lineTo(w * 0.15, h * 0.5); // Pyrenees / France
+        ctx.lineTo(w * 0.25, h * 0.3); // North Coast
+        ctx.lineTo(w * 0.4, h * 0.25); // Denmark/Baltic
+        ctx.lineTo(w * 0.9, h * 0.2); // East Russia
+        ctx.lineTo(w * 0.9, h * 0.85); // Balkans
+        ctx.lineTo(w * 0.6, h * 0.85); // Italy / Med
+        ctx.lineTo(w * 0.4, h * 0.8);
+        ctx.closePath();
+        ctx.fill();
+
+        // Mountain Ranges (Alps & Carpathians)
+        ctx.fillStyle = "#2c261e";
+        // Alps
+        ctx.beginPath(); ctx.arc(w * 0.42, h * 0.62, 35, 0, Math.PI * 2); ctx.fill();
+        // Carpathians
+        ctx.beginPath(); ctx.arc(w * 0.68, h * 0.52, 45, 0, Math.PI * 2); ctx.fill();
+
+        // Real Rivers (Vltava, Danube, Rhine)
+        ctx.strokeStyle = "#1d4ed8";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        // Danube River
+        ctx.moveTo(w * 0.38, h * 0.60);
+        ctx.quadraticCurveTo(w * 0.53, h * 0.58, w * 0.60, h * 0.62);
+        ctx.lineTo(w * 0.85, h * 0.70);
         ctx.stroke();
 
-        // Draw Danube River
-        ctx.lineWidth = 12;
-        ctx.beginPath();
-        ctx.moveTo(0, canvas.height * 0.72);
-        for (let x = 0; x < canvas.width; x += 20) {
-            let wave = Math.cos(x * 0.02 + animationFrame * 0.5) * 4;
-            ctx.lineTo(x, canvas.height * 0.72 + wave);
-        }
-        ctx.stroke();
+        // Trade Caravans Moving Between Cities
+        let cartProgress = (animFrame * 0.1) % 1;
+        let cx = (mapNodes[0].x + (mapNodes[1].x - mapNodes[0].x) * cartProgress) * w;
+        let cy = (mapNodes[0].y + (mapNodes[1].y - mapNodes[0].y) * cartProgress) * h;
+        ctx.fillStyle = "#f59e0b";
+        ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
 
-        // Render Animated Trade Carts
-        carts.forEach(cart => {
-            cart.progress += cart.speed;
-            if (cart.progress > 1) cart.progress = 0;
-            let c1 = cities[cart.from];
-            let c2 = cities[cart.to];
-            let cx = (c1.x + (c2.x - c1.x) * cart.progress) * canvas.width;
-            let cy = (c1.y + (c2.y - c1.y) * cart.progress) * canvas.height;
-
-            ctx.fillStyle = "#ffd700";
-            ctx.beginPath();
-            ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        // Render Cities
-        cities.forEach(city => {
-            let cx = city.x * canvas.width;
-            let cy = city.y * canvas.height;
+        // City Nodes & Borders
+        mapNodes.forEach(node => {
+            let nx = node.x * w;
+            let ny = node.y * h;
 
             // Pulse Aura
-            let pulse = Math.sin(animationFrame * 2) * 3;
-            ctx.fillStyle = city.type === "player" ? "rgba(197, 160, 89, 0.3)" : "rgba(139, 30, 30, 0.3)";
-            ctx.beginPath();
-            ctx.arc(cx, cy, 14 + pulse, 0, Math.PI * 2);
-            ctx.fill();
+            let pulse = Math.sin(animFrame * 2) * 4;
+            ctx.fillStyle = node.owner === "player" ? "rgba(212, 175, 55, 0.3)" : "rgba(153, 27, 27, 0.3)";
+            ctx.beginPath(); ctx.arc(nx, ny, 16 + pulse, 0, Math.PI * 2); ctx.fill();
 
-            // City Icon Box
-            ctx.fillStyle = "#110e0a";
-            ctx.strokeStyle = city.type === "player" ? "#c5a059" : "#8b1e1e";
+            // Badge Box
+            ctx.fillStyle = "#0f0d0a";
+            ctx.strokeStyle = node.owner === "player" ? "#d4af37" : "#555";
             ctx.lineWidth = 2;
-            ctx.fillRect(cx - 35, cy - 12, 70, 24);
-            ctx.strokeRect(cx - 35, cy - 12, 70, 24);
+            ctx.fillRect(nx - 38, ny - 12, 76, 24);
+            ctx.strokeRect(nx - 38, ny - 12, 76, 24);
 
             // City Text
-            ctx.fillStyle = "#e6c687";
-            ctx.font = "bold 11px Georgia";
+            ctx.fillStyle = "#f3cf7a";
+            ctx.font = "bold 11px Times New Roman";
             ctx.textAlign = "center";
-            ctx.fillText(city.name, cx, cy + 4);
+            ctx.fillText(node.name, nx, ny + 4);
         });
 
-        requestAnimationFrame(renderMap);
+        requestAnimationFrame(drawRealEuropeMap);
     }
-    renderMap();
+    drawRealEuropeMap();
 
-    // Game Turn Progression & Logic
+    // UI Updates
     function updateUI() {
+        let goldGain = (game.buildings.mine * 20) - Math.floor(game.army * 0.2);
         document.getElementById('gold').innerText = game.gold;
+        document.getElementById('gold-rate').innerText = (goldGain >= 0 ? '+' : '') + goldGain;
         document.getElementById('materials').innerText = game.materials;
         document.getElementById('food').innerText = game.food;
-        document.getElementById('pop').innerText = game.pop;
         document.getElementById('army').innerText = game.army;
-
-        document.getElementById('ai-poland').innerText = game.ai.poland;
-        document.getElementById('ai-hre').innerText = game.ai.hre;
-        document.getElementById('ai-hungary').innerText = game.ai.hungary;
+        document.getElementById('inflation').innerText = game.inflation.toFixed(1) + 'x';
     }
 
     function nextTurn() {
         game.year += 5;
-        game.gold += 30;
+        let goldGain = (game.buildings.mine * 20) - Math.floor(game.army * 0.2);
+        game.gold += goldGain;
+        game.food += game.buildings.farm * 30;
         game.materials += 15;
-        
-        // AI Dynamic Growth
-        game.ai.poland += Math.floor(Math.random() * 4) + 2;
-        game.ai.hre += Math.floor(Math.random() * 5) + 2;
-        game.ai.hungary += Math.floor(Math.random() * 4) + 2;
 
-        // Era Progression Events
-        if (game.year >= 1348) {
-            document.getElementById('tech-1348').classList.add('active');
-            document.getElementById('tech-1348').innerText = '✓ 1348 n. l. – Založení Karlovy univerzity';
-            document.getElementById('era-title').innerText = 'Vrcholný Středověk (1348 n. l.)';
-        }
-        if (game.year >= 1419) {
-            document.getElementById('tech-1419').classList.add('active');
-            document.getElementById('tech-1419').innerText = '✓ 1419 n. l. – Husitské války';
-        }
-        if (game.year >= 1848) {
-            document.getElementById('tech-1848').classList.add('active');
-            document.getElementById('tech-1848').innerText = '✓ 1848 n. l. – Průmyslová revoluce';
-            document.getElementById('era-title').innerText = 'Průmyslový Věk (1848 n. l.)';
-        }
-        if (game.year >= 1918) {
-            document.getElementById('tech-1918').classList.add('active');
-            document.getElementById('tech-1918').innerText = '✓ 1918 n. l. – Vznik Československa';
-        }
+        // Inflation mechanics over time
+        if (game.year > 1400) game.inflation += 0.05;
 
-        document.getElementById('event-text').innerText = `Kronika: Letopočet pokročil na rok ${game.year} n. l.`;
+        // Faction AI
+        game.factions.hre.power += 5;
+        game.factions.poland.power += 4;
+        document.getElementById('pow-hre').innerText = game.factions.hre.power;
+        document.getElementById('pow-poland').innerText = game.factions.poland.power;
+
+        document.getElementById('event-text').innerText = `Kronika: Letopočet pokročil na rok ${game.year} n. l. Hospodářství vzkvétá.`;
         updateUI();
-
-        if (game.year >= 1950) {
-            alert("Dojeli jste úspěšně až do roku 1950! Váš národ prošel celou historií.");
-        }
     }
 
-    function buildStructure(type) {
-        if (type === 'mine' && game.materials >= 40) {
-            game.materials -= 40;
-            game.gold += 15;
-            alert('Důl úspěšně postaven!');
-        } else if (type === 'farm' && game.gold >= 30) {
-            game.gold -= 30;
-            game.food += 20;
-            alert('Zemědělská usedlost postavena!');
-        } else if (type === 'army' && game.gold >= 30) {
-            game.gold -= 30;
-            game.army += 10;
-            alert('Nová vojenská jednotka rekrutována!');
-        } else {
-            alert('Nedostatek surovin!');
+    function interactDiplomacy(factionKey) {
+        let f = game.factions[factionKey];
+        let action = prompt(`Diplomacie s: ${f.name}\n1 = Poslat tribut (100 🪙)\n2 = Uzavřít pakt\n3 = Vyhlásit válku`);
+        if (action === '1') {
+            if (game.gold >= 100) {
+                game.gold -= 100;
+                f.rel = "Přátelský";
+                alert(`Tribut doručen. ${f.name} zlepšuje své vztahy.`);
+            } else alert('Nedostatek zlata!');
+        } else if (action === '3') {
+            f.rel = "Válka";
+            alert(`Vyhlásili jste válku frakci ${f.name}!`);
         }
+        document.getElementById(`rel-${factionKey}`).innerText = f.rel;
         updateUI();
     }
 
