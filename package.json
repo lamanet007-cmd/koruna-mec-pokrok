@@ -1,0 +1,12 @@
+{
+  "name": "koruna-mec-pokrok",
+  "version": "1.0.0",
+  "description": "Historická grand-strategie Střední Evropy (900-1950)",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -s ."
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}
