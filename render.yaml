@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: koruna-mec-pokrok
+    env: static
+    buildCommand: npm install
+    staticPublishPath: ./
