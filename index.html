@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Koruna, Meč a Pokrok (900–1950)</title>
+    <title>Koruna, Meč a Pokrok: 900–1950</title>
     <style>
         :root {
-            --bg-dark: #050403;
-            --panel-bg: rgba(15, 12, 8, 0.95);
+            --bg-dark: #080604;
+            --panel-bg: rgba(18, 14, 10, 0.96);
             --border-gold: #c5a059;
             --border-glow: #ffd700;
             --border-dark: #3a2e1e;
@@ -97,19 +97,68 @@
             overflow: hidden;
         }
 
-        /* Real Canvas Map */
+        /* Real SVG Vector Map Container */
         #map-container {
             flex: 2;
             position: relative;
-            background: #060b11;
+            background: #120e0a;
+            background-image: radial-gradient(circle at 50% 50%, #1f1810 0%, #080604 100%);
             height: 100%;
             width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
+        #vector-map {
+            width: 95%;
+            height: 95%;
+            filter: drop-shadow(0 0 15px rgba(0,0,0,0.8));
+        }
+
+        /* Styling SVG Map Elements */
+        .sea { fill: #0d1b2a; stroke: #1b263b; stroke-width: 1; }
+        .land-bg { fill: #1c1813; stroke: #3a2e1e; stroke-width: 1; }
+        .river { fill: none; stroke: #2563eb; stroke-width: 2; stroke-linecap: round; }
+        .mountain { fill: #2b2319; stroke: #4a3b2c; stroke-width: 1; }
+
+        .region {
+            stroke: var(--border-gold);
+            stroke-width: 1.5;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            opacity: 0.85;
+        }
+
+        .region:hover {
+            opacity: 1;
+            stroke: #fff;
+            stroke-width: 2.5;
+            filter: drop-shadow(0 0 8px var(--border-glow));
+        }
+
+        .region.player { fill: #5c3d11; stroke: #ffd700; }
+        .region.hre { fill: #1e293b; stroke: #64748b; }
+        .region.poland { fill: #451212; stroke: #b91c1c; }
+        .region.hungary { fill: #14381e; stroke: #15803d; }
+
+        .city-node {
+            fill: #ffd700;
+            stroke: #000;
+            stroke-width: 1.5;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .city-label {
+            fill: #f3cf7a;
+            font-size: 11px;
+            font-weight: bold;
+            font-family: 'Times New Roman', serif;
+            text-anchor: middle;
+            pointer-events: none;
+            text-shadow: 1px 1px 3px #000;
         }
 
         /* Side Panels */
@@ -223,7 +272,7 @@
             .tab-content { display: none; min-width: 100%; }
             .tab-content.active-tab { display: flex; }
             #map-container { display: none; }
-            #map-container.active-tab { display: block; }
+            #map-container.active-tab { display: flex; }
         }
     </style>
 </head>
@@ -244,9 +293,59 @@
 
     <!-- Main Workspace -->
     <div id="main-layout">
-        <!-- Realistic Europe Canvas Map -->
+        <!-- Real SVG Vector Map of Central Europe -->
         <div id="map-container" class="active-tab">
-            <canvas id="gameMap"></canvas>
+            <svg id="vector-map" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background Sea & Oceans -->
+                <rect class="sea" x="0" y="0" width="1000" height="700"/>
+
+                <!-- Real European Landmass Contour -->
+                <path class="land-bg" d="M 50,650 L 80,450 L 220,320 L 350,220 L 480,100 L 650,80 L 950,150 L 980,620 L 700,680 L 450,650 Z"/>
+
+                <!-- Mountain Ranges -->
+                <path class="mountain" d="M 320,440 Q 420,400 500,430 Q 450,470 320,440 Z" title="Alpy"/>
+                <path class="mountain" d="M 600,320 Q 720,280 800,380 Q 720,420 600,320 Z" title="Karpaty"/>
+                <circle class="mountain" cx="480" cy="310" r="40" title="Český Masív"/>
+
+                <!-- Rivers (Vltava, Labe, Dunaj, Visla) -->
+                <path class="river" d="M 480,360 Q 475,320 450,250" title="Vltava & Labe"/>
+                <path class="river" d="M 320,430 Q 520,410 650,430 T 900,480" title="Dunaj"/>
+                <path class="river" d="M 680,330 Q 720,240 750,180" title="Visla"/>
+
+                <!-- HISTORICAL REGIONS / KINGDOMS (Vector Polygons) -->
+                <!-- České Království / Knížectví -->
+                <polygon id="reg-bohemia" class="region player" points="430,270 510,260 540,320 480,360 420,330" onclick="selectRegion('Čechy a Morava (Vše sídlo)')"/>
+                
+                <!-- Svatá Říše Římská / Bavorsko / Prusko -->
+                <polygon id="reg-hre" class="region hre" points="220,250 420,240 420,330 310,430 200,380" onclick="selectRegion('Svatá Říše Římská / Německé státy')"/>
+
+                <!-- Polské Království -->
+                <polygon id="reg-poland" class="region poland" points="520,180 750,160 800,290 620,310 520,250" onclick="selectRegion('Polské Království / Slezsko')"/>
+
+                <!-- Uherské Království -->
+                <polygon id="reg-hungary" class="region hungary" points="550,330 780,300 850,450 630,480 520,420" onclick="selectRegion('Uherské Království / Ury')"/>
+
+                <!-- CITIES & NODES -->
+                <!-- Praha -->
+                <circle class="city-node" cx="475" cy="300" r="7" onclick="selectRegion('Praha - Hlavní Město')"/>
+                <text class="city-label" x="475" y="288">Praha</text>
+
+                <!-- Kutná Hora -->
+                <circle class="city-node" cx="505" cy="315" r="5" onclick="selectRegion('Kutná Hora - Stříbrné Doly')"/>
+                <text class="city-label" x="505" y="330">Kutná Hora</text>
+
+                <!-- Vídeň -->
+                <circle class="city-node" cx="500" cy="405" r="6"/>
+                <text class="city-label" x="500" y="422">Vídeň</text>
+
+                <!-- Krakov -->
+                <circle class="city-node" cx="660" cy="300" r="6"/>
+                <text class="city-label" x="660" y="290">Krakov</text>
+
+                <!-- Budín -->
+                <circle class="city-node" cx="610" cy="425" r="6"/>
+                <text class="city-label" x="610" y="442">Budín</text>
+            </svg>
         </div>
 
         <!-- Management & Economy Panel -->
@@ -257,11 +356,11 @@
             </div>
 
             <div class="panel-box">
-                <h3>Dynamická Výstavba Panství</h3>
+                <h3>Výstavba a Správa Panství</h3>
                 
                 <div class="build-card">
                     <div style="display:flex; justify-content:space-between; font-weight:bold;">
-                        <span>⛏️ Stříbrný Důl / Hutě</span>
+                        <span>⛏️ Stříbrný Důl v Kutné Hoře</span>
                         <span>Úroveň: <span id="lvl-mine">1</span></span>
                     </div>
                     <div style="font-size:0.75rem; color:#aaa; margin:3px 0;">+20 Zlata/tah | Náklady: 80 🪵</div>
@@ -325,7 +424,7 @@
 
     <!-- Mobile Tabs Navigation -->
     <nav id="mobile-nav">
-        <button class="nav-tab active" onclick="switchTab('map-container', this)">🗺️ Mapa Evropy</button>
+        <button class="nav-tab active" onclick="switchTab('map-container', this)">🗺️ Vektorová Mapa</button>
         <button class="nav-tab" onclick="switchTab('build-panel', this)">🏗️ Ekonomika</button>
         <button class="nav-tab" onclick="switchTab('diplomacy-panel', this)">⚔️ Diplomacie</button>
     </nav>
@@ -362,6 +461,10 @@
         btn.classList.add('active');
     }
 
+    function selectRegion(name) {
+        alert(`Vybrané území: ${name}`);
+    }
+
     // Dynamic Construction Logic
     function startBuilding(type, cost) {
         if (game.buildingInProgress[type]) return;
@@ -395,137 +498,7 @@
         updateUI();
     }
 
-    // Realistic Europe Map Canvas Render Engine
-    const canvas = document.getElementById('gameMap');
-    const ctx = canvas.getContext('2d');
-    let animFrame = 0;
-
-    function resizeCanvas() {
-        canvas.width = canvas.parentElement.clientWidth;
-        canvas.height = canvas.parentElement.clientHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    // Map Locations & Territory Borders
-    const mapNodes = [
-        { name: "Praha", x: 0.49, y: 0.44, owner: "player" },
-        { name: "Kutná Hora", x: 0.52, y: 0.46, owner: "player" },
-        { name: "Vídeň", x: 0.52, y: 0.55, owner: "hre" },
-        { name: "Berlín", x: 0.47, y: 0.36, owner: "hre" },
-        { name: "Krakov", x: 0.63, y: 0.42, owner: "poland" },
-        { name: "Budín", x: 0.58, y: 0.59, owner: "hungary" },
-        { name: "Paříž", x: 0.23, y: 0.50, owner: "neutral" },
-        { name: "Řím", x: 0.41, y: 0.75, owner: "neutral" }
-    ];
-
-    function drawRealisticEurope() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        animFrame += 0.03;
-
-        let w = canvas.width;
-        let h = canvas.height;
-
-        // Ocean Base (Deep Blue Gradient)
-        let oceanGrad = ctx.createRadialGradient(w * 0.5, h * 0.5, 50, w * 0.5, h * 0.5, w * 0.8);
-        oceanGrad.addColorStop(0, "#0a192f");
-        oceanGrad.addColorStop(1, "#030a16");
-        ctx.fillStyle = oceanGrad;
-        ctx.fillRect(0, 0, w, h);
-
-        // Realistic European Continent Landmass Shape
-        ctx.fillStyle = "#1e2e1c"; // Fertile Dark Green Terrain Base
-        ctx.beginPath();
-        // Iberian Peninsula
-        ctx.moveTo(w * 0.05, h * 0.78);
-        ctx.lineTo(w * 0.06, h * 0.60);
-        ctx.lineTo(w * 0.16, h * 0.60); // Pyrenees
-        // France & Benelux
-        ctx.lineTo(w * 0.20, h * 0.45);
-        ctx.lineTo(w * 0.28, h * 0.38);
-        // Jutland & Scandinavia
-        ctx.lineTo(w * 0.35, h * 0.30);
-        ctx.lineTo(w * 0.42, h * 0.12);
-        ctx.lineTo(w * 0.52, h * 0.10);
-        ctx.lineTo(w * 0.55, h * 0.25);
-        // Baltic & Eastern Europe Plains
-        ctx.lineTo(w * 0.88, h * 0.15);
-        ctx.lineTo(w * 0.95, h * 0.70); // Black Sea Coast
-        ctx.lineTo(w * 0.70, h * 0.72); // Balkans
-        // Italy Peninsula
-        ctx.lineTo(w * 0.48, h * 0.65);
-        ctx.lineTo(w * 0.45, h * 0.82);
-        ctx.lineTo(w * 0.38, h * 0.68);
-        ctx.closePath();
-        ctx.fill();
-
-        // Realistic Mountain Ranges Layer (Alps, Carpathians, Pyrenees)
-        ctx.fillStyle = "#3a3328";
-        // Alps
-        ctx.beginPath(); ctx.ellipse(w * 0.36, h * 0.58, w * 0.07, h * 0.03, -0.2, 0, Math.PI * 2); ctx.fill();
-        // Carpathians
-        ctx.beginPath(); ctx.ellipse(w * 0.64, h * 0.50, w * 0.08, h * 0.05, 0.5, 0, Math.PI * 2); ctx.fill();
-        // Bohemian Massif / Hraniční hory
-        ctx.fillStyle = "#2b251b";
-        ctx.beginPath(); ctx.arc(w * 0.49, h * 0.44, w * 0.035, 0, Math.PI * 2); ctx.fill();
-
-        // Animated Realistic Rivers (Danube, Vltava, Rhine, Visla)
-        ctx.strokeStyle = "#2563eb";
-        ctx.lineWidth = 3;
-
-        // Danube River
-        ctx.beginPath();
-        ctx.moveTo(w * 0.34, h * 0.58);
-        ctx.quadraticCurveTo(w * 0.48, h * 0.56, w * 0.53, h * 0.56);
-        ctx.lineTo(w * 0.60, h * 0.62);
-        ctx.lineTo(w * 0.82, h * 0.68);
-        ctx.stroke();
-
-        // Vltava -> Labe River
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(w * 0.50, h * 0.50);
-        let wave = Math.sin(animFrame * 0.8) * 3;
-        ctx.lineTo(w * 0.49 + wave * 0.001, h * 0.44);
-        ctx.lineTo(w * 0.44, h * 0.33);
-        ctx.stroke();
-
-        // Trade Caravans Moving
-        let cartProgress = (animFrame * 0.12) % 1;
-        let cx = (mapNodes[0].x + (mapNodes[1].x - mapNodes[0].x) * cartProgress) * w;
-        let cy = (mapNodes[0].y + (mapNodes[1].y - mapNodes[0].y) * cartProgress) * h;
-        ctx.fillStyle = "#ffd700";
-        ctx.beginPath(); ctx.arc(cx, cy, 3.5, 0, Math.PI * 2); ctx.fill();
-
-        // Cities & Territory Markers
-        mapNodes.forEach(node => {
-            let nx = node.x * w;
-            let ny = node.y * h;
-
-            // Territory Pulse Glow
-            let pulse = Math.sin(animFrame * 2) * 3;
-            ctx.fillStyle = node.owner === "player" ? "rgba(197, 160, 89, 0.35)" : "rgba(139, 0, 0, 0.35)";
-            ctx.beginPath(); ctx.arc(nx, ny, 15 + pulse, 0, Math.PI * 2); ctx.fill();
-
-            // City Badge UI
-            ctx.fillStyle = "#0c0a07";
-            ctx.strokeStyle = node.owner === "player" ? "#c5a059" : "#666";
-            ctx.lineWidth = 2;
-            ctx.fillRect(nx - 36, ny - 11, 72, 22);
-            ctx.strokeRect(nx - 36, ny - 11, 72, 22);
-
-            // Text
-            ctx.fillStyle = "#f3cf7a";
-            ctx.font = "bold 11px Times New Roman";
-            ctx.textAlign = "center";
-            ctx.fillText(node.name, nx, ny + 4);
-        });
-
-        requestAnimationFrame(drawRealisticEurope);
-    }
-    drawRealisticEurope();
-
-    // UI Updates
+    // UI Updates & Era Dynamic Boundaries Updates
     function updateUI() {
         let goldGain = (game.buildings.mine * 20) - Math.floor(game.army * 0.2);
         document.getElementById('gold').innerText = game.gold;
@@ -542,6 +515,15 @@
         game.gold += goldGain;
         game.food += game.buildings.farm * 30;
         game.materials += 15;
+
+        // Dynamic Era Map Changes
+        if (game.year >= 1348 && game.year < 1848) {
+            document.getElementById('era-title').innerText = "Vrcholný Středověk (1348 n. l.)";
+            // Expand Bohemia SVG region visually
+            document.getElementById('reg-bohemia').setAttribute('points', '410,250 530,240 560,330 480,380 400,340');
+        } else if (game.year >= 1848) {
+            document.getElementById('era-title').innerText = "Průmyslová Revoluce (1848 n. l.)";
+        }
 
         if (game.year > 1400) game.inflation += 0.05;
 
@@ -578,7 +560,7 @@
         if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
             if (docElem.requestFullscreen) {
                 docElem.requestFullscreen();
-            } else if (docElem.webkitRequestFullscreen) { /* Safari / iOS / Android WebKit */
+            } else if (docElem.webkitRequestFullscreen) {
                 docElem.webkitRequestFullscreen();
             } else if (docElem.msRequestFullscreen) {
                 docElem.msRequestFullscreen();
