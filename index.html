@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Koruna, Meč a Pokrok: 900–1950</title>
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Horní lišta: Suroviny a Éra -->
+        <header id="top-bar">
+            <div class="era-badge">
+                <span id="current-year">900 AD</span> — <span id="current-era">Raný Středověk</span>
+            </div>
+            <div id="resources-display">
+                <div class="res" title="Zlato / Finance"><span class="icon">🪙</span> <span id="res-gold">100</span></div>
+                <div class="res" title="Materiál / Suroviny"><span class="icon">🪵</span> <span id="res-materials">150</span></div>
+                <div class="res" title="Potraviny / Zásoby"><span class="icon">🌾</span> <span id="res-food">200</span></div>
+                <div class="res" title="Populace / Pracovní síla"><span class="icon">👥</span> <span id="res-pop">50</span></div>
+                <div class="res" title="Vojenská síla"><span class="icon">⚔️</span> <span id="res-army">10</span></div>
+            </div>
+            <button id="fullscreen-btn" class="icon-btn" title="Celá obrazovka">⛶</button>
+        </header>
+
+        <!-- Hlavní herní plocha -->
+        <main id="main-view">
+            <!-- Interaktivní mapa Evropy -->
+            <section id="map-section" class="view-panel active">
+                <div class="map-overlay-title">Mapa Střední Evropy</div>
+                <div id="map-canvas">
+                    <!-- Regiony generované JS -->
+                </div>
+            </section>
+
+            <!-- Panel Budování a Výzkumu -->
+            <section id="build-section" class="view-panel">
+                <h2>Rozvoj a Výzkum</h2>
+                <div id="tech-tree"></div>
+                <div id="buildings-list"></div>
+            </section>
+
+            <!-- Panel Diplomacie a Války -->
+            <section id="diplomacy-section" class="view-panel">
+                <h2>Diplomacie a Válka</h2>
+                <div id="factions-list"></div>
+            </section>
+        </main>
+
+        <!-- Modální okno pro Události -->
+        <div id="event-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="event-title">Historická událost</h2>
+                <p id="event-desc">Popis události...</p>
+                <div id="event-choices"></div>
+            </div>
+        </div>
+
+        <!-- Spodní navigační menu (Optimalizované pro dotyk) -->
+        <nav id="bottom-nav">
+            <button class="nav-btn active" data-target="map-section">🗺️ Mapa</button>
+            <button class="nav-btn" data-target="build-section">🏗️ Rozvoj</button>
+            <button class="nav-btn" data-target="diplomacy-section">⚔️ Diplomacie</button>
+            <button id="next-turn-btn" class="action-btn">Další rok ➔</button>
+        </nav>
+    </div>
+
+    <script type="module" src="src/js/app.js"></script>
+</body>
+</html>
