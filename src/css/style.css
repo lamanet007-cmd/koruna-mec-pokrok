@@ -1,0 +1,198 @@
+:root {
+    --bg-color: #0d0c0a;
+    --panel-bg: #1a1714;
+    --border-color: #8c6f3d;
+    --accent-color: #d4af37;
+    --text-color: #e6ded4;
+    --danger-color: #8b0000;
+}
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Georgia', serif;
+    overflow: hidden;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+}
+
+/* Horní lišta */
+#top-bar {
+    background: linear-gradient(180deg, #262017 0%, #15120d 100%);
+    border-bottom: 2px solid var(--border-color);
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+}
+
+.era-badge {
+    font-weight: bold;
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+#resources-display {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+}
+
+.res {
+    background: rgba(0,0,0,0.5);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #443722;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.icon-btn {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    color: var(--accent-color);
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+/* Hlavní pohled */
+#main-view {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.view-panel {
+    display: none;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.view-panel.active {
+    display: block;
+}
+
+/* Mapa */
+#map-section {
+    padding: 0;
+    background: #1e2619;
+    position: relative;
+}
+
+#map-canvas {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    padding: 15px;
+    align-content: start;
+}
+
+.region-card {
+    background: #2b2419;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+.region-card.player {
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.region-card h4 {
+    margin: 0 0 5px 0;
+    color: var(--accent-color);
+}
+
+/* Modály */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal.hidden { display: none; }
+
+.modal-content {
+    background: var(--panel-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 500px;
+    width: 90%;
+}
+
+#event-choices button {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background: #332717;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Spodní menu */
+#bottom-nav {
+    background: #15120d;
+    border-top: 2px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px;
+    gap: 5px;
+}
+
+.nav-btn, .action-btn {
+    flex: 1;
+    padding: 10px 5px;
+    background: #262017;
+    border: 1px solid #443722;
+    color: var(--text-color);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.nav-btn.active {
+    background: var(--accent-color);
+    color: #000;
+}
+
+.action-btn {
+    background: var(--danger-color);
+    border-color: #ff4500;
+    color: #fff;
+}
