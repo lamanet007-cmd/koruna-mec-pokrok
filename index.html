@@ -4,67 +4,374 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Koruna, Meč a Pokrok: 900–1950</title>
-    <link rel="stylesheet" href="src/css/style.css">
+    <style>
+        :root {
+            --bg-color: #0c0b09;
+            --panel-bg: #1c1813;
+            --border-gold: #c5a059;
+            --border-dark: #3a2e1e;
+            --text-gold: #e6c687;
+            --text-light: #f3ece1;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+        }
+
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+        }
+
+        /* Horní lišta stylu grand-strategie */
+        #top-bar {
+            background: linear-gradient(180deg, #2b2216 0%, #15110c 100%);
+            border-bottom: 2px solid var(--border-gold);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .resource-group {
+            display: flex;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-dark);
+            font-size: 0.9rem;
+        }
+
+        .res-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-gold);
+            font-weight: bold;
+        }
+
+        .btn-gold {
+            background: linear-gradient(180deg, #5c441b 0%, #32230c 100%);
+            border: 1px solid var(--border-gold);
+            color: var(--text-gold);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+        }
+
+        .btn-gold:active {
+            background: #231808;
+        }
+
+        /* Hlavní herní plocha rozdělená na mapu vlevo a strom/panství vpravo */
+        #main-layout {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+            background: #11150f;
+        }
+
+        /* Interaktivní mapa stylizovaná do historického pergamenu/krajiny */
+        #map-panel {
+            flex: 2;
+            position: relative;
+            background: #2a3822;
+            border-right: 2px solid var(--border-gold);
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+        }
+
+        #map-canvas {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-image: 
+                radial-gradient(circle at 30% 40%, #364a2c 0%, #1c2617 100%);
+        }
+
+        /* Prvky na mapě (Hory, řeky, města) */
+        .map-river {
+            position: absolute;
+            background: #2c598a;
+            opacity: 0.8;
+            transform: rotate(-15deg);
+            border-radius: 10px;
+        }
+
+        .map-mountain {
+            position: absolute;
+            background: #4a453b;
+            color: #d1c7b7;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            border: 1px solid #6b6150;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .map-city {
+            position: absolute;
+            background: #241d15;
+            border: 2px solid var(--border-gold);
+            color: var(--text-gold);
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.2s;
+        }
+
+        .map-city:hover {
+            transform: scale(1.05);
+            border-color: #fff;
+        }
+
+        /* Pravý panel: Vývojový strom a správa */
+        #right-panel {
+            flex: 1;
+            min-width: 320px;
+            background: var(--panel-bg);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 15px;
+            overflow-y: auto;
+            border-left: 1px solid var(--border-dark);
+        }
+
+        .panel-box {
+            background: #14110d;
+            border: 1px solid var(--border-dark);
+            border-radius: 6px;
+            padding: 12px;
+        }
+
+        .panel-box h3 {
+            margin: 0 0 10px 0;
+            color: var(--text-gold);
+            font-size: 1rem;
+            border-bottom: 1px solid var(--border-dark);
+            padding-bottom: 5px;
+        }
+
+        /* Tech/Era strom */
+        .tech-node {
+            background: #221c13;
+            border: 1px solid var(--border-gold);
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .tech-node.active {
+            border-color: #4caf50;
+            background: #172618;
+        }
+
+        /* Spodní lišta */
+        #bottom-bar {
+            background: #120f0a;
+            border-top: 2px solid var(--border-gold);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .event-log {
+            font-size: 0.85rem;
+            color: #d1c7b7;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
-    <div id="game-container">
-        <!-- Horní lišta: Suroviny a Éra -->
-        <header id="top-bar">
-            <div class="era-badge">
-                <span id="current-year">900 AD</span> — <span id="current-era">Raný Středověk</span>
-            </div>
-            <div id="resources-display">
-                <div class="res" title="Zlato / Finance"><span class="icon">🪙</span> <span id="res-gold">100</span></div>
-                <div class="res" title="Materiál / Suroviny"><span class="icon">🪵</span> <span id="res-materials">150</span></div>
-                <div class="res" title="Potraviny / Zásoby"><span class="icon">🌾</span> <span id="res-food">200</span></div>
-                <div class="res" title="Populace / Pracovní síla"><span class="icon">👥</span> <span id="res-pop">50</span></div>
-                <div class="res" title="Vojenská síla"><span class="icon">⚔️</span> <span id="res-army">10</span></div>
-            </div>
-            <button id="fullscreen-btn" class="icon-btn" title="Celá obrazovka">⛶</button>
-        </header>
 
-        <!-- Hlavní herní plocha -->
-        <main id="main-view">
-            <!-- Interaktivní mapa Evropy -->
-            <section id="map-section" class="view-panel active">
-                <div class="map-overlay-title">Mapa Střední Evropy</div>
-                <div id="map-canvas">
-                    <!-- Regiony generované JS -->
+<div id="game-container">
+    <!-- Horní lišta surovin -->
+    <header id="top-bar">
+        <div class="resource-group">
+            <div class="res-item">🪙 <span id="gold">350</span></div>
+            <div class="res-item">🪵 <span id="materials">180</span></div>
+            <div class="res-item">🌾 <span id="food">420</span></div>
+            <div class="res-item">👥 <span id="pop">120</span></div>
+            <div class="res-item">⚔️ <span id="army">45</span></div>
+        </div>
+        <button class="btn-gold" id="fullscreen-btn">⛶ Celá obrazovka</button>
+    </header>
+
+    <!-- Hlavní rozvržení mapy a pravého panelu -->
+    <div id="main-layout">
+        <!-- Interaktivní mapa Evropy -->
+        <div id="map-panel">
+            <div id="map-canvas">
+                <!-- Řeka Vltava / Labe -->
+                <div class="map-river" style="width: 12px; height: 100%; top: 0; left: 42%;"></div>
+                <div class="map-river" style="width: 100%; height: 14px; top: 65%; left: 0;"></div>
+                
+                <!-- Horská pásma -->
+                <div class="map-mountain" style="top: 20%; left: 25%;">Krušné hory</div>
+                <div class="map-mountain" style="top: 15%; left: 70%;">Krkonoše</div>
+                <div class="map-mountain" style="top: 80%; left: 30%;">Alpy</div>
+
+                <!-- Města a lokace -->
+                <div class="map-city" style="top: 40%; left: 38%;" onclick="alert('Praha: Sídlo panovníka, produkce zlata a věhlasu.')">
+                    🏰 Praha
                 </div>
-            </section>
-
-            <!-- Panel Budování a Výzkumu -->
-            <section id="build-section" class="view-panel">
-                <h2>Rozvoj a Výzkum</h2>
-                <div id="tech-tree"></div>
-                <div id="buildings-list"></div>
-            </section>
-
-            <!-- Panel Diplomacie a Války -->
-            <section id="diplomacy-section" class="view-panel">
-                <h2>Diplomacie a Válka</h2>
-                <div id="factions-list"></div>
-            </section>
-        </main>
-
-        <!-- Modální okno pro Události -->
-        <div id="event-modal" class="modal hidden">
-            <div class="modal-content">
-                <h2 id="event-title">Historická událost</h2>
-                <p id="event-desc">Popis události...</p>
-                <div id="event-choices"></div>
+                <div class="map-city" style="top: 48%; left: 52%;" onclick="alert('Kutná Hora: Stříbrné doly, +50 zlata za tah.')">
+                    ⛏️ Kutná Hora
+                </div>
+                <div class="map-city" style="top: 72%; left: 55%;" onclick="alert('Vídeň: Brána do Jihu a Podunají.')">
+                    🏛️ Vídeň
+                </div>
+                <div class="map-city" style="top: 28%; left: 78%;" onclick="alert('Krakov: Severní obchodní křižovatka.')">
+                    🛡️ Krakov
+                </div>
             </div>
         </div>
 
-        <!-- Spodní navigační menu (Optimalizované pro dotyk) -->
-        <nav id="bottom-nav">
-            <button class="nav-btn active" data-target="map-section">🗺️ Mapa</button>
-            <button class="nav-btn" data-target="build-section">🏗️ Rozvoj</button>
-            <button class="nav-btn" data-target="diplomacy-section">⚔️ Diplomacie</button>
-            <button id="next-turn-btn" class="action-btn">Další rok ➔</button>
-        </nav>
+        <!-- Pravý panel s historií a vývojem -->
+        <div id="right-panel">
+            <div class="panel-box">
+                <h3 id="era-title">Raný Středověk (900 n. l.)</h3>
+                <p style="font-size: 0.85rem; margin: 0; color: #b8ac98;" id="era-desc">Budujte základy státu, opevnění a upevněte moc dynastie v srdci Evropy.</p>
+            </div>
+
+            <div class="panel-box">
+                <h3>Historický Vývoj a Výzkum</h3>
+                <div class="tech-node active">✓ 935 n. l. – Křesťanská jednota a hradní soustava</div>
+                <div class="tech-node" id="tech-1348">🔒 1348 n. l. – Založení Karlovy univerzity (Země Koruny české)</div>
+                <div class="tech-node" id="tech-1419">🔒 1419 n. l. – Husitské války a vozové hradby</div>
+                <div class="tech-node" id="tech-1848">🔒 1848 n. l. – Průmyslová revoluce a železnice</div>
+                <div class="tech-node" id="tech-1918">🔒 1918 n. l. – Vznik Československé republiky</div>
+            </div>
+
+            <div class="panel-box">
+                <h3>Správa panství</h3>
+                <button class="btn-gold" style="width: 100%; margin-bottom: 8px;" onclick="buildStructure('mine')">Postavit Důl / Hutě (-40 🪵)</button>
+                <button class="btn-gold" style="width: 100%;" onclick="buildStructure('army')">Verbovat jednotky (-30 🪙, +10 ⚔️)</button>
+            </div>
+        </div>
     </div>
 
-    <script type="module" src="src/js/app.js"></script>
+    <!-- Spodní ovládací lišta -->
+    <footer id="bottom-bar">
+        <div class="event-log" id="event-text">Kronika: Roku 900 n. l. započala cesta vašeho rodu ve střední Evropě.</div>
+        <button class="btn-gold" style="padding: 10px 20px; font-size: 1rem;" onclick="nextTurn()">Další rok ➔</button>
+    </footer>
+</div>
+
+<script>
+    let game = {
+        year: 900,
+        gold: 350,
+        materials: 180,
+        food: 420,
+        pop: 120,
+        army: 45
+    };
+
+    function updateUI() {
+        document.getElementById('gold').innerText = game.gold;
+        document.getElementById('materials').innerText = game.materials;
+        document.getElementById('food').innerText = game.food;
+        document.getElementById('pop').innerText = game.pop;
+        document.getElementById('army').innerText = game.army;
+    }
+
+    function nextTurn() {
+        game.year += 5;
+        game.gold += 25;
+        game.materials += 10;
+
+        // Historické posuny
+        if (game.year >= 1348) {
+            document.getElementById('tech-1348').classList.add('active');
+            document.getElementById('tech-1348').innerText = '✓ 1348 n. l. – Založení Karlovy univerzity';
+            document.getElementById('era-title').innerText = 'Vrcholný Středověk (1348 n. l.)';
+            document.getElementById('era-desc').innerText = 'Lucemburská éra, rozmach vzdělanosti a stavba Nového Města.';
+        }
+        if (game.year >= 1419) {
+            document.getElementById('tech-1419').classList.add('active');
+            document.getElementById('tech-1419').innerText = '✓ 1419 n. l. – Husitské války';
+        }
+        if (game.year >= 1848) {
+            document.getElementById('tech-1848').classList.add('active');
+            document.getElementById('tech-1848').innerText = '✓ 1848 n. l. – Průmyslová revoluce';
+            document.getElementById('era-title').innerText = 'Průmyslový Věk (1848 n. l.)';
+            document.getElementById('era-desc').innerText = 'Vznikají parní stroje, továrny v Ostravě a Kladně.';
+        }
+        if (game.year >= 1918) {
+            document.getElementById('tech-1918').classList.add('active');
+            document.getElementById('tech-1918').innerText = '✓ 1918 n. l. – Vznik Československa';
+        }
+
+        document.getElementById('event-text').innerText = `Kronika: Letopočet pokročil na rok ${game.year} n. l. Země se rozvíjí.`;
+        updateUI();
+
+        if (game.year >= 1950) {
+            alert("Dojeli jste úspěšně až do roku 1950! Váš národ prošel celou historií od raného středověku.");
+        }
+    }
+
+    function buildStructure(type) {
+        if (type === 'mine') {
+            if (game.materials >= 40) {
+                game.materials -= 40;
+                game.gold += 15; // Zvýšení příjmu
+                alert('Důl úspěšně postaven! Zvýšen příjem zlata.');
+            } else {
+                alert('Nedostatek materiálu (dřeva/surovin)!');
+            }
+        } else if (type === 'army') {
+            if (game.gold >= 30) {
+                game.gold -= 30;
+                game.army += 10;
+                alert('Nová vojenská hotovost odvedena do zbraně.');
+            } else {
+                alert('Nedostatek zlata!');
+            }
+        }
+        updateUI();
+    }
+
+    // Fullscreen podpora
+    document.getElementById('fullscreen-btn').addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => console.log(err));
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+        }
+    });
+</script>
+
 </body>
 </html>
